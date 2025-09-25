@@ -1,4 +1,13 @@
+import { router } from "../router.js";
 export let modalOpen
+
+export const setModalOpen = (value) => {
+    modalOpen = value;
+};
+
+export const getModalOpen = () => {
+    return modalOpen;
+};
 
 export function handleFormKeydown(event) {
     console.log('666666666666');
@@ -22,6 +31,10 @@ export function handleFormKeydown(event) {
             form.dispatchEvent(submitEvent);
         }
     }
+    document.getElementById('taskForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        router.navigate('/board');
+    });
     
     // Escape закрывает модалку
     if (event.key === 'Escape') {
@@ -42,7 +55,8 @@ export function closeTaskModal() {
     form.removeEventListener('keydown', handleFormKeydown);
     
     modal.removeEventListener('keydown', trapFocus);
-    
+    // Закрытие модалки возвращает на /board
+
     // Возвращаем фокус на предыдущий элемент
     if (lastFocusedElement) {
         lastFocusedElement.focus();
@@ -56,12 +70,15 @@ export function openTaskModalCreate() {
     modal.hidden = false;
     modal.querySelector('.save-btn').style.display = 'block'
     modal.querySelector('.update-btn').style.display = 'none'
+    modal.querySelector('.close-btn').style.display = 'none';
     modal.style.display = 'flex';
     modal.setAttribute('aria-hidden', 'false');
                 
     // Сохраняем элемент, который был в фокусе
     lastFocusedElement = document.activeElement;
-    modalOpen = true;
+    document.getElementById('modal-title').textContent = 'Создать новую задачу';
+    document.getElementById('taskForm').reset();
+     setModalOpen(true);
     
     // Устанавливаем фокус на первый интерактивный элемент модалки
     const firstFocusableElement = modal.querySelector('input, textarea, button');
@@ -75,7 +92,7 @@ export function openTaskModalCreate() {
     modal.addEventListener('keydown', trapFocus);
 }
 
-export function openTaskModalUpdate(){
+export function openTaskModalUpdate(task){
     const modal = document.getElementById('taskModal');
     modal.style.display = 'flex';
     modal.querySelector('.update-btn').style.display = 'block'
@@ -90,6 +107,7 @@ export function openTaskModalUpdate(){
     // Добавляем обработчик для Enter на форме
     const form = document.getElementById('taskForm');
     form.addEventListener('keydown', handleFormKeydown);
+    router.openTaskEdit(task);
     
 }
 

@@ -1,8 +1,8 @@
-import { renderColumns } from "./components/columns.js";
-import { createNewTask } from "./components/createTask.js";
-import { closeTaskModal, modalOpen } from "./components/modal.js";
-import { openTaskModalCreate } from "./components/modal.js";
-
+import { renderColumns } from "./components/view/columns.js";
+import { createNewTask } from "./components/view/createTask.js";
+import { closeTaskModal, modalOpen } from "./components/ui/modal.js";
+import { openTaskModalCreate } from "./components/ui/modal.js";
+import { router } from "./components/router.js";
 
 
 
@@ -17,6 +17,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (e.key === 'Escape' && modalOpen) {
             closeTaskModal();
         }
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', () => {
+        router.navigate('/board');
+    });
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+        console.log('3333');
+        
+    router.navigate('/board');
     });
 
         // Устанавливаем основные ARIA атрибуты
@@ -37,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Обработчик для формы создания задачи
     document.getElementById('taskForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+        router.navigate('/board');
         if(document.querySelector('.save-btn').style.display === 'none'){
             return;
         }

@@ -1,5 +1,5 @@
-import { renderColumns } from "./columns.js";
-import { loadData, saveData } from "./store.js";
+import { renderColumns } from "../view/columns.js";
+import { loadData, saveData } from "../store.js";
 
 // Обработчики для перетаскивания
 let draggedTask = null;

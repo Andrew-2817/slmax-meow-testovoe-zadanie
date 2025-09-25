@@ -1,11 +1,11 @@
-import { highlightText } from "./search.js";
-import { saveData, loadData } from "./store.js";
+import { highlightText, currentSearchTerm } from "../action/search.js";
+import { saveData, loadData } from "../store.js";
 import { renderColumns } from "./columns.js";
-import { parseMarkdown } from "./utils.js";
-import { currentSearchTerm } from "./search.js";
-import { closeTaskModal } from "./modal.js";
-import { handleDragEnd, handleDragStart } from "./dragDrop.js";
-import { openTaskModalUpdate } from "./modal.js";
+import { parseMarkdown } from "../utils/utils.js";
+import { closeTaskModal } from "../ui/modal.js";
+import { handleDragEnd, handleDragStart } from "../action/dragDrop.js";
+import { openTaskModalUpdate } from "../ui/modal.js";
+import { router } from "../router.js";
 
 export async function createNewTask(title, description) {
     const data = await loadData();
@@ -39,12 +39,24 @@ export function createTaskCard(task) {
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `Задача: ${task.title}. ${task.description || 'Нет описания'}. Статус: ${getStatusText(task.status)}`);
     
+    // Навигация при клике на карточку
+    card.addEventListener('click', () => {
+        router.navigate(`/task/${task.id}`);
+    });
+    
+    card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            router.navigate(`/task/${task.id}`);
+        }
+    });
+
     const title = document.createElement('div');
     title.className = 'task-title';
 
     // Добавляем подсветку поиска в заголовок
     if (currentSearchTerm) {
-        title.insertAdjacentHTML('beforeend', highlightText(task.title, currentSearchTerm))
+        title.insertAdjacentHTML('beforeend', highlightText(parseMarkdown(task.title), currentSearchTerm))
     } else {
         title.textContent = task.title;
     }
@@ -74,7 +86,7 @@ export function createTaskCard(task) {
     // обработчик для кнопки изменения
     const editTask = actions.querySelector('.tack__action__edit')
     editTask.addEventListener('click', async () => {
-    openTaskModalUpdate()
+    openTaskModalUpdate(task)
     
     // Заполняем форму
     document.querySelector('.form-group input').value = task.title
@@ -155,6 +167,12 @@ export function createTaskCard(task) {
     card.addEventListener('dragstart', handleDragStart);
     card.addEventListener('dragend', handleDragEnd);
     
+    const ediTask = actions.querySelector('.tack__action__edit');
+    ediTask.addEventListener('click', (e) => {
+        e.stopPropagation(); // Предотвращаем срабатывание клика по карточке
+        openTaskModalUpdate(task); // Открываем редактирование через роутер
+    });
+
     return card;
 }
 

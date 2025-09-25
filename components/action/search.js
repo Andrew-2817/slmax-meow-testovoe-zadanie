@@ -1,11 +1,13 @@
 export let currentSearchTerm = '';
 export let currentFilter = 'all';
-import { renderColumns } from "./columns.js";
+import { renderColumns } from "../view/columns.js";
 const searchInput = document.querySelector('.kanban__search__add input')
 searchInput.addEventListener("input", (e) => {
     let value = e.target.value
     currentSearchTerm = value;
-    renderColumns();
+    setTimeout(() =>{
+        renderColumns();
+    }, 200)
 })
 
 // Обработчики для фильтров

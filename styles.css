@@ -256,3 +256,9 @@ input:focus, textarea:focus{
     width: 100%;height: 100%;
     padding: 15px;
 }
+.task-card-highlighted {
+    border: 3px solid #3498db;
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+}

@@ -1,7 +1,7 @@
-import { loadData } from "./store.js";
+import { loadData } from "../store.js";
 import { createTaskCard } from "./createTask.js";
-import { handleDrop, handleDragOver } from "./dragDrop.js";
-import { filterTasks, currentFilter, searchTasks, currentSearchTerm } from "./search.js";
+import { handleDrop, handleDragOver } from "../action/dragDrop.js";
+import { filterTasks, currentFilter, searchTasks, currentSearchTerm } from "../action/search.js";
 export async function renderColumns() {
     let data = await loadData();
     data = filterTasks(data, currentFilter);
