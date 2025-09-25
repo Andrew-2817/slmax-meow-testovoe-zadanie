@@ -11,7 +11,7 @@ export function parseMarkdown(text) {
     // Функция для очистки HTML
     const sanitizeHtml = (dirty) => {
         const temp = document.createElement('div');
-        temp.innerHTML = dirty;
+        temp.textContent = dirty;
         
         // Удаляем все неразрешенные теги, оставляя только текст
         const nodes = temp.querySelectorAll('*');
@@ -21,7 +21,7 @@ export function parseMarkdown(text) {
             }
         }
         
-        return temp.innerHTML;
+        return temp.textContent;
     };
     
     // Экранирование HTML
