@@ -73,7 +73,10 @@ export function openTaskModalCreate() {
     modal.querySelector('.close-btn').style.display = 'none';
     modal.style.display = 'flex';
     modal.setAttribute('aria-hidden', 'false');
-                
+    const forms = modal.querySelectorAll('.form-group')
+    forms[0].inert = false
+    forms[1].inert = false
+    modal.inert = false;
     // Сохраняем элемент, который был в фокусе
     lastFocusedElement = document.activeElement;
     document.getElementById('modal-title').textContent = 'Создать новую задачу';
@@ -97,7 +100,11 @@ export function openTaskModalUpdate(task){
     modal.style.display = 'flex';
     modal.querySelector('.update-btn').style.display = 'block'
     modal.querySelector('.save-btn').style.display = 'none'
+    modal.querySelector('.close-btn').style.display = 'none'
     modal.setAttribute('aria-hidden', 'false');
+    const forms = modal.querySelectorAll('.form-group')
+    forms[0].inert = false
+    forms[1].inert = false
     modal.hidden = false;
     lastFocusedElement = document.activeElement;
     modalOpen = true;

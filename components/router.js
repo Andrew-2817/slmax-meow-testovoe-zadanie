@@ -86,20 +86,18 @@ class KanbanRouter {
         const modal = document.getElementById('taskModal');
         modal.removeAttribute('aria-hidden');
         modal.inert = false; // Разрешаем взаимодействие
-        
+        const forms = modal.querySelectorAll('.form-group')
         modal.style.display = 'flex';
         modal.hidden = false;
+        forms[0].inert = true
+        forms[1].inert = true
         // Определяем режим (просмотр или редактирование)
         const isEditMode = this.currentRoute.path.includes('/task') || 
         document.querySelector('.update-btn').style.display !== 'none';
         
         if (isEditMode) {
-            // Режим редактирования
-            modal.querySelector('.update-btn').style.display = 'block';
-            modal.querySelector('.save-btn').style.display = 'none';
-            modal.querySelector('.close-btn').style.display = 'block';
-            document.getElementById('modal-title').textContent = 'Редактировать задачу';
-        } else {
+            console.log('show');
+            
             // Режим просмотра
             modal.querySelector('.save-btn').style.display = 'none';
             modal.querySelector('.update-btn').style.display = 'none';
@@ -128,7 +126,9 @@ class KanbanRouter {
     
     closeTaskModal() {
         const modal = document.getElementById('taskModal');
-        modal.inert = true; // Блокируем взаимодействие
+        const forms = modal.querySelectorAll('.form-group')
+        forms[0].inert = true
+        forms[1].inert = true
         modal.style.display = 'none';
         modal.hidden = true;
         
@@ -142,13 +142,14 @@ class KanbanRouter {
     // Метод для открытия редактирования (использует тот же маршрут /task/:id)
     openTaskEdit(task) {
         // Переходим на тот же маршрут, но активируем режим редактирования
-        this.navigate(`/task/${task.id}`);
+        // this.navigate(`/task/${task.id}`);
+        // console.log('хуй');
         
         // Устанавливаем режим редактирования в UI
         const modal = document.getElementById('taskModal');
         modal.querySelector('.update-btn').style.display = 'block';
         modal.querySelector('.save-btn').style.display = 'none';
-        modal.querySelector('.close-btn').style.display = 'block';
+        modal.querySelector('.close-btn').style.display = 'none';
         document.getElementById('modal-title').textContent = 'Редактировать задачу';
     }
     

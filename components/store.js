@@ -30,5 +30,9 @@ export async function loadData() {
     }
 }
 export function saveData(data) {
+    console.log('ok', data);
+    
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    console.log('done');
+    
 }

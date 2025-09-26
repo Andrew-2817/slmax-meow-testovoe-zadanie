@@ -16,6 +16,14 @@
             <div class="kanban__tab" data-filter="large">Обьемные</div>
             <button class="add_task_button">Добавить задачу</button>
         </div>
+        <div class="undo-redo-buttons">
+            <button id="undoBtn" class="undo-btn" title="Нечего отменять" disabled>
+                <i class="fas fa-undo"></i> Отменить
+            </button>
+            <button id="redoBtn" class="redo-btn" title="Нечего повторять" disabled>
+                <i class="fas fa-redo"></i> Повторить
+            </button>
+        </div>
         <div class="kanban__columns">
             <div class="kanban__column" data-status="todo">
                 <h3 class="kanban__column__head">ToDo</h3>

@@ -262,3 +262,33 @@ input:focus, textarea:focus{
     transform: scale(1.02);
     transition: all 0.3s ease;
 }
+.undo-redo-buttons {
+    margin-top: 35px;
+    display: flex;
+    gap: 5px;
+}
+
+.undo-btn, .redo-btn {
+    padding: 8px 12px;
+    border: 1px solid #bdc3c7;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.undo-btn:hover:not(:disabled), .redo-btn:hover:not(:disabled) {
+    background: #ecf0f1;
+    border-color: #3498db;
+}
+
+.undo-btn:disabled, .redo-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.undo-btn:focus, .redo-btn:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 1px;
+}

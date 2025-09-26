@@ -6,6 +6,7 @@ import { closeTaskModal } from "../ui/modal.js";
 import { handleDragEnd, handleDragStart } from "../action/dragDrop.js";
 import { openTaskModalUpdate } from "../ui/modal.js";
 import { router } from "../router.js";
+import { UndoManager, undoManager } from "../undo/undoManager.js";
 
 export async function createNewTask(title, description) {
     const data = await loadData();
@@ -20,6 +21,11 @@ export async function createNewTask(title, description) {
         description: description,
         status: 'todo'
     };
+    undoManager.addAction(
+        UndoManager.ActionTypes.CREATE,
+        { ...newTask }, // данные для действия
+        null // обратные данные не нужны для создания
+    );
     
     // Добавляем задачу в данные
     data.push(newTask);
@@ -39,15 +45,21 @@ export function createTaskCard(task) {
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `Задача: ${task.title}. ${task.description || 'Нет описания'}. Статус: ${getStatusText(task.status)}`);
     
-    // Навигация при клике на карточку
-    card.addEventListener('click', () => {
-        router.navigate(`/task/${task.id}`);
+    //Навигация при клике на карточку
+    card.addEventListener('click', (e) => {
+        if (e.target !== document.querySelector('.tack__actions')) {
+            console.log(88181123);
+            
+            router.navigate(`/task/${task.id}`);
+            router.openTaskModal(task)
+        }
     });
     
     card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if ((e.key === 'Enter' || e.key === ' ') && (e.target !== document.querySelector('.tack__actions'))) {
             e.preventDefault();
             router.navigate(`/task/${task.id}`);
+            router.openTaskModal(task)
         }
     });
 
@@ -85,7 +97,8 @@ export function createTaskCard(task) {
 
     // обработчик для кнопки изменения
     const editTask = actions.querySelector('.tack__action__edit')
-    editTask.addEventListener('click', async () => {
+    editTask.addEventListener('click', async (e) => {
+        e.stopPropagation();
     openTaskModalUpdate(task)
     
     // Заполняем форму
@@ -111,15 +124,24 @@ export function createTaskCard(task) {
         const taskIndex = data.findIndex(el => el.id === task.id)
         
         if (taskIndex !== -1) {
-            data[taskIndex] = { 
-                ...data[taskIndex], 
-                title: title, 
-                description: description // description может быть пустым
-            }
-            saveData(data)
-            renderColumns()
-            closeTaskModal()
+            const oldTask = { ...data[taskIndex] };
+            const updatedTask = {
+                ...oldTask,
+                title: title,
+                description: description
+            };
             
+            // Сохраняем в историю ДО обновления
+            undoManager.addAction(
+                UndoManager.ActionTypes.UPDATE,
+                { ...updatedTask },
+                { ...oldTask } // старые данные для отката
+            );
+            
+            data[taskIndex] = updatedTask;
+            saveData(data);
+            renderColumns();
+    
             // Удаляем временный обработчик
             document.getElementById('taskForm').removeEventListener('submit', handleEditSubmit)
         }
@@ -132,17 +154,32 @@ export function createTaskCard(task) {
     
     // Обработчик для кнопки удаления
     const deleteTask = actions.querySelector('.tack__action__delete')
-    deleteTask.addEventListener('click', async () => {
+    deleteTask.addEventListener('click', async (e) => {
+        e.stopPropagation();
         const data = await loadData();
-        const filteredData = data.filter((el) => el.id !== task.id)
-        console.log(filteredData);
-        saveData(filteredData)
-        renderColumns()
+        const taskIndex = data.findIndex(t => t.id === task.id);
+    
+        if (taskIndex !== -1) {
+            const deletedTask = data[taskIndex];
+            
+            // Сохраняем в историю ДО удаления
+            undoManager.addAction(
+                UndoManager.ActionTypes.DELETE,
+                { id: task.id, title: deletedTask.title },
+                { ...deletedTask } // полная задача для восстановления
+            );
+            
+            const updatedData = data.filter(t => t.id !== task.id);
+            saveData(updatedData);
+            renderColumns();
+        }
+
     })
     
     // Обработчик для кнопки перетаскивания
     const translateBtn = actions.querySelector('.tack__action__translate');
-    translateBtn.addEventListener('click', function() {
+    translateBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         card.draggable = !card.draggable;
         if (card.draggable) {
             card.style.cursor = 'move';

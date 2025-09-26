@@ -1,5 +1,6 @@
 import { renderColumns } from "../view/columns.js";
 import { loadData, saveData } from "../store.js";
+import { UndoManager, undoManager } from "../undo/undoManager.js";
 
 // Обработчики для перетаскивания
 let draggedTask = null;
@@ -26,11 +27,26 @@ export async function handleDrop(e) {
         const taskId = parseInt(draggedTask.dataset.taskId);
         const newStatus = this.closest('.kanban__column').dataset.status;
         
-        // Обновляем статус задачи в данных
         const data = await loadData();
         const taskIndex = data.findIndex(task => task.id === taskId);
         
         if (taskIndex !== -1) {
+            const oldStatus = data[taskIndex].status;
+            
+            // Сохраняем в историю ДО перемещения
+            undoManager.addAction(
+                UndoManager.ActionTypes.MOVE,
+                {
+                    id: taskId,
+                    title: data[taskIndex].title,
+                    newStatus: newStatus
+                },
+                {
+                    id: taskId,
+                    previousStatus: oldStatus
+                }
+            );
+            
             data[taskIndex].status = newStatus;
             saveData(data);
             renderColumns();

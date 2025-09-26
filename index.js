@@ -3,6 +3,7 @@ import { createNewTask } from "./components/view/createTask.js";
 import { closeTaskModal, modalOpen } from "./components/ui/modal.js";
 import { openTaskModalCreate } from "./components/ui/modal.js";
 import { router } from "./components/router.js";
+import { UndoManager, undoManager } from "./components/undo/undoManager.js";
 
 
 
@@ -11,6 +12,43 @@ import { router } from "./components/router.js";
 document.addEventListener('DOMContentLoaded', async function() {
     // Загружаем и отображаем данные
     await renderColumns();
+
+
+    document.getElementById('undoBtn').addEventListener('click', () => {
+        if (undoManager.undo()) {
+            renderColumns();
+        }
+    });
+    
+    document.getElementById('redoBtn').addEventListener('click', () => {
+        if (undoManager.redo()) {
+            renderColumns();
+        }
+    });
+    
+    // Горячие клавиши Ctrl+Z и Ctrl+Y
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
+            e.preventDefault();
+            if (undoManager.undo()) {
+                renderColumns();
+            }
+        }
+        
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') {
+            e.preventDefault();
+            if (undoManager.redo()) {
+                renderColumns();
+            }
+        }
+        
+        if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+            e.preventDefault();
+            if (undoManager.redo()) {
+                renderColumns();
+            }
+        }
+    });
 
     document.addEventListener('keydown', (e) => {
         // Escape закрывает модалку если она открыта
@@ -37,9 +75,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Обработчик для кнопки отмены
     document.getElementById('cancelBtn').addEventListener('click', closeTaskModal);
-    
-    // Обработчик для кнопки добавления задачи
-    document.querySelector('.add_task_button').addEventListener('click', openTaskModalCreate);
     
     // Обработчик для кнопки отмены
     document.getElementById('cancelBtn').addEventListener('click', closeTaskModal);
