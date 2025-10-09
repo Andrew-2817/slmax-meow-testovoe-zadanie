@@ -42,3 +42,6 @@ git branch - просмотр веток
 git log - просмотр коммитов на каждой ветке
 git branch -D branch - удаление ветки
 git checkout -b branch - создание + переход на ветку
+git branch -m "lesson_br" - переименовали ветку
+git push --set-upstream origin lesson_br - опубликовать ветку
+git push - опубликовать все изменения
